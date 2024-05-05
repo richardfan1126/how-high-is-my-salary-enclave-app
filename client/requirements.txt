@@ -1,0 +1,9 @@
+cbor2==5.2.0
+cose==0.9.dev2
+cryptography==3.3.2
+prompt_toolkit==1.0.14
+pycryptodome==3.9.9
+pyOpenSSL==19.1.0
+requests==2.31.0
+termcolor==2.4.0
+whaaaaat==0.5.2

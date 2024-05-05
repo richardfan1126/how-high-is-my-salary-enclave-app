@@ -1,0 +1,34 @@
+---
+name: Build and sign EIF
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "enclave/**"
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  build_and_sign_eif:
+    name: Build and sign EIF
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Build EIF
+        id: build-eif
+        uses: richardfan1126/nitro-enclaves-eif-build-action@v1
+        with:
+          docker-build-context-path: enclave
+          enable-ghcr-push: true
+          enable-artifact-sign: true
+          eif-file-name: enclave.eif
+          eif-info-file-name: enclave-info.json
+          artifact-tag: ${{ github.sha }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

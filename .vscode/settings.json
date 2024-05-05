@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "enclave/app/Cargo.toml"
+    ]
+}
