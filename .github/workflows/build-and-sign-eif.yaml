@@ -5,12 +5,14 @@ on:
     branches:
       - main
     paths:
+      - ".github/workflows/**"
       - "enclave/**"
 
 permissions:
   contents: write
   packages: write
   id-token: write
+  attestations: write
 
 jobs:
   build_and_sign_eif:
@@ -23,11 +25,12 @@ jobs:
 
       - name: Build EIF
         id: build-eif
-        uses: richardfan1126/nitro-enclaves-eif-build-action@v1
+        uses: richardfan1126/nitro-enclaves-eif-build-action@beta-github-attest
         with:
           docker-build-context-path: enclave
           enable-ghcr-push: true
           enable-artifact-sign: true
+          enable-github-attest: true
           eif-file-name: enclave.eif
           eif-info-file-name: enclave-info.json
           artifact-tag: ${{ github.sha }}
