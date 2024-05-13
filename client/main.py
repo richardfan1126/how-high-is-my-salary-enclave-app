@@ -5,7 +5,7 @@ import string
 import json
 
 import requests
-from whaaaaat import prompt
+import inquirer
 from termcolor import colored
 
 from attestation_doc_helper import verify_attestation_doc, get_pub_key, get_user_data
@@ -40,12 +40,11 @@ def clear_records():
 
 def main():
     menu_question = [
-        {
-            'type': 'list',
-            'name': 'option',
-            'message': 'Please choose your action:',
-            'choices': ['See my salary position', 'Add my salary', 'Clear records', 'Exit']
-        }
+        inquirer.List(
+            "option",
+            message = "Please choose your action",
+            choices=['See my salary position', 'Add my salary', 'Clear records', 'Exit']
+        ),
     ]
 
     # Get the root cert PEM content
@@ -75,7 +74,7 @@ def main():
     print("\n✅ " + colored("Encryption key obtained from enclave", "green") + "\n\n")
 
     while True:
-        answers = prompt(menu_question)
+        answers = inquirer.prompt(menu_question)
         option = answers['option']
 
         if option == "Add my salary":
@@ -84,13 +83,9 @@ def main():
             #########################################
             # Input salary
             questions = [
-                {
-                    'type': 'input',
-                    'name': 'salary',
-                    'message': 'What is your salary?',
-                }
+                inquirer.Text("salary", message="What is your monthly salary?"),
             ]
-            answers = prompt(questions)
+            answers = inquirer.prompt(questions)
             salary = answers['salary']
 
             # Encrypt my salary using public key in attestation document
@@ -112,13 +107,9 @@ def main():
             ######################################
             # Input entry UUID
             questions = [
-                {
-                    'type': 'input',
-                    'name': 'uuid',
-                    'message': 'What is your entry UUID?',
-                }
+                inquirer.Text("uuid", message="What is your entry UUID?"),
             ]
-            answers = prompt(questions)
+            answers = inquirer.prompt(questions)
             uuid = answers['uuid']
 
             # Encrypt the entry UUID using public key in attestation document
