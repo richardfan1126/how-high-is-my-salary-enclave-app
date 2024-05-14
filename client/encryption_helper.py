@@ -7,9 +7,10 @@ from Crypto.Cipher import AES
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey, X25519PublicKey
 
-def encrypt(enclave_public_key: X25519PublicKey, plaintext: str) -> str:
+def generate_session_key(enclave_public_key: X25519PublicKey) -> tuple[bytes, bytes]:
     """
-    Encrypt message using ECDH and the public key from attestation document
+    Generate a temporary session key using ECDH and the public key from attestation document
+    This key will be used to encrypt data before sending to enclave
     """
 
     # Generate a random ECDH private key
@@ -22,14 +23,37 @@ def encrypt(enclave_public_key: X25519PublicKey, plaintext: str) -> str:
     # Generate a session key using my private key and enclave's public key
     session_key = my_private_key.exchange(enclave_public_key)
 
+    return (session_key, my_public_key_bytes)
+
+def encrypt(session_key: bytes, plaintext: str) -> str:
+    """
+    Encrypt message using session key
+    """
+
     # Encrypt the data with the AES session key
     nonce = get_random_bytes(12)
     cipher_aes = AES.new(session_key, AES.MODE_GCM, nonce = nonce)
     ciphertext, digest = cipher_aes.encrypt_and_digest(str.encode(plaintext))
 
-    # Return the encrypted session key, nonce, tag and ciphertext
-    return "{}:{}:{}".format(
-        base64.b64encode(my_public_key_bytes).decode(),
+    # Bundle encrypted session key, nonce, tag and ciphertext for sending to enclave
+    return "{}:{}".format(
         base64.b64encode(cipher_aes.nonce).decode(),
         base64.b64encode(ciphertext + digest).decode(),
     )
+
+def decrypt(ciphertext_bundle_b64: str, session_key: bytes):
+    ciphertext_parts = ciphertext_bundle_b64.split(":")
+
+    nonce_b64 = ciphertext_parts[0]
+    ciphertext_b64 = ciphertext_parts[1]
+
+    nonce = base64.b64decode(nonce_b64)
+    full_ciphertext = base64.b64decode(ciphertext_b64)
+
+    ciphertext = full_ciphertext[:-16]
+    tag = full_ciphertext[-16:]
+
+    cipher_aes = AES.new(session_key, AES.MODE_GCM, nonce = nonce)
+    plaintext = cipher_aes.decrypt_and_verify(ciphertext, tag)
+
+    return plaintext.decode()

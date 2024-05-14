@@ -9,7 +9,7 @@ import inquirer
 from termcolor import colored
 
 from attestation_doc_helper import verify_attestation_doc, get_pub_key, get_user_data
-from encryption_helper import encrypt
+from encryption_helper import generate_session_key, encrypt, decrypt
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -27,10 +27,11 @@ def get_attestation(nonce):
 
     return r.json()['attestation_doc']
 
-def send_request(url, encrypted_payload, nonce):
+def send_request(url, public_key, encrypted_payload, encrypted_nonce):
     r = requests.post(f"http://{ENCLAVE_ENDPOINT}/{url}", json = {
+        "public_key": public_key,
         "encrypted_payload": encrypted_payload,
-        "nonce": nonce
+        "encrypted_nonce": encrypted_nonce
     })
 
     return r.json()['attestation_doc']
@@ -88,16 +89,25 @@ def main():
             answers = inquirer.prompt(questions)
             salary = answers['salary']
 
+            # Generate session key
+            session_key, my_public_key_bytes = generate_session_key(enclave_public_key)
+            my_public_key_b64 = base64.b64encode(my_public_key_bytes).decode()
+
             # Encrypt my salary using public key in attestation document
-            ciphertext_bundle = encrypt(enclave_public_key, salary)
+            ciphertext_bundle = encrypt(session_key, salary)
+
+            # Generate encrypted nonce for enclave to put into attestation document
             nonce = generate_nonce()
+            encrypted_nonce = encrypt(session_key, nonce)
 
             # Send my encrypted salary to the enclave
-            response_attestation_b64 = send_request("add", ciphertext_bundle, nonce)
+            response_attestation_b64 = send_request("add", my_public_key_b64, ciphertext_bundle, encrypted_nonce)
 
             response_attestation = base64.b64decode(response_attestation_b64)
             verify_attestation_doc(response_attestation, pcrs = pcrs, root_cert_pem = root_cert_pem, expected_nonce = nonce)
-            uuid = get_user_data(response_attestation)
+            encrypted_uuid = get_user_data(response_attestation)
+
+            uuid = decrypt(encrypted_uuid, session_key)
 
             print("\n\n" + colored("This is your unique entry ID: ", "light_blue") + colored(f"{uuid}", "light_blue", attrs=["bold", "underline"]) + "\n\n")
         
@@ -112,16 +122,25 @@ def main():
             answers = inquirer.prompt(questions)
             uuid = answers['uuid']
 
-            # Encrypt the entry UUID using public key in attestation document
-            ciphertext_bundle = encrypt(enclave_public_key, uuid)
+            # Generate session key
+            session_key, my_public_key_bytes = generate_session_key(enclave_public_key)
+            my_public_key_b64 = base64.b64encode(my_public_key_bytes).decode()
+
+            # Encrypt the entry UUID using session key
+            ciphertext_bundle = encrypt(session_key, uuid)
+            
+            # Encrypt the nonce for enclave to put into attestation document
             nonce = generate_nonce()
+            encrypted_nonce = encrypt(session_key, nonce)
 
             # Send the encrypted UUID to the enclave
-            response_attestation_b64 = send_request("get-position", ciphertext_bundle, nonce)
+            response_attestation_b64 = send_request("get-position", my_public_key_b64, ciphertext_bundle, encrypted_nonce)
 
             response_attestation = base64.b64decode(response_attestation_b64)
             verify_attestation_doc(response_attestation, pcrs = pcrs, root_cert_pem = root_cert_pem, expected_nonce = nonce)
-            position_and_total_json = get_user_data(response_attestation)
+            encrypted_position_and_total_json = get_user_data(response_attestation)
+
+            position_and_total_json = decrypt(encrypted_position_and_total_json, session_key)
 
             position_and_total = json.loads(position_and_total_json)
 
