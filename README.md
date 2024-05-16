@@ -100,7 +100,7 @@ _(You can choose one to perform depending on you requirements):_
    
    1. Install cosign
    
-      See: https://docs.sigstore.dev/system_config/installation/
+      Read: https://docs.sigstore.dev/system_config/installation/
 
    1. Run the following command
 
@@ -138,11 +138,11 @@ _(You can choose one to perform depending on you requirements):_
 
    1. Install GitHub CLI
 
-      See: https://github.com/cli/cli#installation
+      Read: https://github.com/cli/cli#installation
 
    1. Login to GitHub CLI with your GitHub account
 
-      See: https://cli.github.com/manual/gh_auth_login
+      Read: https://cli.github.com/manual/gh_auth_login
 
    1. Run the following command
 
@@ -183,7 +183,7 @@ _(You can choose one to perform depending on you requirements):_
 
    1. Install `slsa-verifier`
 
-      See: https://github.com/slsa-framework/slsa-verifier#installation
+      Read: https://github.com/slsa-framework/slsa-verifier#installation
 
    1. Run the following commands
 
@@ -241,4 +241,70 @@ The PCR values of the EIF we've just built can be obtained from the artifact ann
 
 ### Deploy the enclave app
 
+To deploy the enclave app, deploy the Terraform stack inside `terraform/`
+
+1. Install terraform CLI
+
+   Read: https://developer.hashicorp.com/terraform/install
+
+1. Modify `terraform.tfvars`
+
+   Change `eif_artifact_path` to the EIF artifact URI on GitHub Container Registry.
+
+   You can skip this step if you choose to use the EIF file I built.
+
+1. Setup your AWS account credential on CLI
+
+   Read: https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration
+
+1. Apply terraform stack
+
+   Run the following commands
+
+   ```bash
+   cd terraform/
+   terraform init
+   terraform apply
+   ```
+
+   Review the resources to be created, and type `yes` to confirm.
+
+1. Take note of the EC2 instance public IP address
+
+   The IP address will be shown on your CLI as the terraform output `instance_public_ip`.
+
 ### Run client app
+
+To interact with the enclave app, we can use the Python client app inside `client/`.
+
+To use the app, you need Python 3.10 or above.
+
+1. (Optional) Create a virtual environment
+
+   You can create a virtual environment for the client app to avoid mixing dependencies' versions with your global Python setup.
+
+   ```bash
+   cd client/
+   python3 -m venv .venv/
+   source .venv/bin/activate
+   ```
+
+1. Install dependencies
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+1. Modify `config.ini`
+
+   Change the values as follows:
+
+   * **PCR0**: Change to the `PCR0` value you take from the **Obtain PCR values of the EIF** step.
+
+   * **EnclaveEndpoint**: Change to the public IP address of the EC2 instance you have deployed in the **Deploy the enclave app** step.
+
+1. Run the app
+
+   ```bash
+   python main.py
+   ```
