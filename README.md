@@ -154,7 +154,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      gh attestation verify oci://ghcr.io/richardfan1126/nitro-enclaves-cosign-sandbox:94a13386dbce65ebd079aad4183930d8155ba087 \
+      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
           --owner richardfan1126
       ```
 
@@ -169,7 +169,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      gh attestation verify oci://ghcr.io/richardfan1126/nitro-enclaves-cosign-sandbox:94a13386dbce65ebd079aad4183930d8155ba087 \
+      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
           --owner richardfan1126 \
           --format json
       ```
@@ -206,6 +206,26 @@ _(You can choose one to perform depending on you requirements):_
       ```
       Verified build using builder "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v2.0.0" at commit 0123456789abcdef0123456789abcdef01234567
       PASSED: Verified SLSA provenance
+      ```
+
+      To view the [SLSA provenance](https://slsa.dev/spec/v0.2/provenance) of the build, run the following commands
+
+      _You will need cosign for the following commands. Read the installation step [here](https://docs.sigstore.dev/system_config/installation/)_
+
+      ```bash
+      cosign download attestation <artifact_uri> \
+         | jq -r '.payload' \
+         | base64 -d \
+         | jq
+      ```
+
+      E.g.
+
+      ```bash
+      cosign download attestation ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
+         | jq -r '.payload' \
+         | base64 -d \
+         | jq
       ```
    </details>
 
