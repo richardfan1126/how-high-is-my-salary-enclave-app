@@ -4,5 +4,5 @@ cryptography==42.0.7
 inquirer==3.2.4
 pycryptodome==3.20.0
 pyOpenSSL==24.1.0
-requests==2.31.0
+requests==2.32.2
 termcolor==2.4.0
