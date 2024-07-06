@@ -72,7 +72,7 @@ The enclave app is built using the GitHub Action workflow. It is triggered autom
 
 The build output is an [EIF file](https://docs.aws.amazon.com/enclaves/latest/user/building-eif.html), stored in the GitHub Container Registry under the same repository.
 
-E.g. `ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c`
+E.g. `ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6`
 
 If you want to customize the enclave app, you can fork this repository and push the changes to the `main` branch of the forked repository.
 
@@ -112,7 +112,7 @@ _(You can choose one to perform depending on you requirements):_
 
       E.g.
       ```bash
-      cosign verify ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
+      cosign verify ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6 \
           --certificate-identity-regexp "https://github.com/richardfan1126/how-high-is-my-salary-enclave-app/" \
           --certificate-oidc-issuer https://token.actions.githubusercontent.com
       ```
@@ -154,7 +154,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
+      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6 \
           --owner richardfan1126
       ```
 
@@ -169,7 +169,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
+      gh attestation verify oci://ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6 \
           --owner richardfan1126 \
           --format json
       ```
@@ -197,7 +197,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      ./slsa-verifier verify-image ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c@sha256:aa299150fcabde6ef4c67c59eeab14b58222e572eb97927e12842a69ef9bb43a \
+      ./slsa-verifier verify-image ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6@sha256:7f2d906d9290ad68e60786e5267d99759cf4098e8fcfc28de49cc69e9bfaf447 \
           --source-uri github.com/richardfan1126/how-high-is-my-salary-enclave-app
       ```
 
@@ -222,7 +222,7 @@ _(You can choose one to perform depending on you requirements):_
       E.g.
 
       ```bash
-      cosign download attestation ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:f088278396d8c4d914a871ccacecd7fb497a958c \
+      cosign download attestation ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6 \
          | jq -r '.payload' \
          | base64 -d \
          | jq
@@ -239,7 +239,7 @@ The PCR values of the EIF we've just built can be obtained from the artifact ann
 
 1. Go to the detail page of the artifact
 
-   E.g., https://github.com/richardfan1126/how-high-is-my-salary-enclave-app/pkgs/container/how-high-is-my-salary-enclave-app/215966914
+   E.g., https://github.com/richardfan1126/how-high-is-my-salary-enclave-app/pkgs/container/how-high-is-my-salary-enclave-app/237830213
 
 1. Scroll down to `Manifest`, you will see `PCR0`, `PCR1`, and `PCR2`.
 
@@ -249,9 +249,9 @@ The PCR values of the EIF we've just built can be obtained from the artifact ann
    {
        ...
        "labels": {
-           "PCR0": "86a197e809c78a6ce144b6a961e039e494470ac395ed1033b704c05ffe43b9dd0974ff138c2420ac66dd5b0d01599495",
-           "PCR1": "52b919754e1643f4027eeee8ec39cc4a2cb931723de0c93ce5cc8d407467dc4302e86490c01c0d755acfe10dbf657546",
-           "PCR2": "77ab86ccb92fd7e526edb30e8b61cd934c2d07be07b9a6c582ebc8dc2613def9427761b2206371a39e31b10392aeeba6",
+           "PCR0": "0b3b6546969f7e2d692fe7ca2bab0273cb10ed3ea4bcf5e292d95f68e5149058ea2b4d569dbdcb3fea2d3ed7e85dc73a",
+           "PCR1": "4b4d5b3661b3efc12920900c80e126e4ce783c522de6c02a2a5bf7af3a2b9327b86776f188e4be1c1c404a129dbda493",
+           "PCR2": "6e03fd3eacec687eb88046102dcb3bdcd0ea422fbc5ce8844a9ebf122ecae3c373264ebfcf6775b93ef04c912d9bc215",
            ...
        }
    }
