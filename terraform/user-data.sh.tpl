@@ -3,9 +3,6 @@
 # Stop SSM agent - Fix issue: https://github.com/amazonlinux/amazon-linux-2023/issues/397
 systemctl stop amazon-ssm-agent
 
-# Install build tool
-dnf groupinstall 'Development Tools' -y
-
 # Install nitro-cli
 dnf install aws-nitro-enclaves-cli aws-nitro-enclaves-cli-devel -y
 systemctl enable --now nitro-enclaves-allocator.service
@@ -24,16 +21,7 @@ mv /root/oras-install/oras /usr/local/bin/
 rm -rf /root/oras_$${VERSION}_*.tar.gz /root/oras-install/
 
 # Install socat
-cd /root
-wget http://www.dest-unreach.org/socat/download/socat-1.8.0.0.tar.gz
-tar -xf socat-1.8.0.0.tar.gz
-cd socat-1.8.0.0/
-./configure
-make
-make install
-cd /root
-rm -f /root/socat-1.8.0.0.tar.gz
-rm -rf /root/socat-1.8.0.0/
+yum install socat -y
 
 # Pull EIF
 HOME=/root oras pull -o /root ${eifArtifactPath}
