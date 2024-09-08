@@ -106,15 +106,17 @@ _(You can choose one to perform depending on you requirements):_
 
       ```bash
       cosign verify <artifact_uri> \
-          --certificate-identity-regexp "<github_repo_url>" \
-          --certificate-oidc-issuer https://token.actions.githubusercontent.com
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+          --certificate-identity "<github_action_workflow_ref>" \
+          --certificate-github-workflow-repository "<github_repo_name>"
       ```
 
       E.g.
       ```bash
       cosign verify ghcr.io/richardfan1126/how-high-is-my-salary-enclave-app:538f821a3cacf8370a4a707f79fc26476bc27bb6 \
-          --certificate-identity-regexp "https://github.com/richardfan1126/how-high-is-my-salary-enclave-app/" \
-          --certificate-oidc-issuer https://token.actions.githubusercontent.com
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+          --certificate-identity "https://github.com/richardfan1126/how-high-is-my-salary-enclave-app/.github/workflows/build-and-sign-eif.yaml@refs/heads/main" \
+          --certificate-github-workflow-repository "richardfan1126/how-high-is-my-salary-enclave-app"
       ```
 
       If the artifact is signed using the correct GitHub Action workflow, you will see the following message.
